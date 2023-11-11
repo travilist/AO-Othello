@@ -80,7 +80,7 @@ def get_move(player, board):
     if valid:
       return flipped_stones
     else:
-      return 0
+      return None
 
   # --- DETERMINE VALID MOVES
   def find_valid_moves(future_board, player_num):
@@ -111,7 +111,10 @@ def get_move(player, board):
 
         # Search all directions for opposing player's stones that can be flipped
         for direction in search_directions:
-          flipped_stones += search_direction(future_board, player_num, current_pos, direction)
+          search_result = search_direction(future_board, player_num, current_pos, direction)
+
+          if search_result is not None:
+            flipped_stones += search_direction(future_board, player_num, current_pos, direction)
 
         if len(flipped_stones) > 0:
           valid_moves.append([flipped_stones, current_pos])
@@ -153,10 +156,10 @@ def get_move(player, board):
   scores = {
     'Opp has no stones': 5000,
     'Plr wins': 1000,
-    'Opp has less stones': 10,
-    'Opp has more stones': -50,
-    'Same amount of stones': -10,
-    'Tie game': -1000,
+    'Opp has less stones': 100,
+    'Same amount of stones': -50,
+    'Opp has more stones': -200,
+    'Tie game': -3000,
     'Plr loses': -5000,
     'Plr has no pieces': -9999
   }
@@ -226,7 +229,7 @@ def get_move(player, board):
       for move in valid_moves:
         future_board = copy_board(future_board)
         make_move(future_board, move, player)
-        resulting_score = find_best_move(future_board, False, iterations_left - 1)
+        resulting_score = find_best_move(future_board, False, iterations_left - 1)[1]
 
         if resulting_score > current_score:
           current_score = resulting_score
@@ -237,7 +240,7 @@ def get_move(player, board):
       for move in valid_moves:
         future_board = copy_board(future_board)
         make_move(future_board, move, opponent)
-        resulting_score = find_best_move(future_board, True, iterations_left - 1)
+        resulting_score = find_best_move(future_board, True, iterations_left - 1)[1]
 
       if resulting_score < current_score:
         current_score = resulting_score
@@ -246,8 +249,10 @@ def get_move(player, board):
     return optimal_move, current_score
     
   # Determine move with the most flipped stones
-  amount_iterations = 5
-  best_move = find_best_move(copy_board(board), True, 5)
+  amount_iterations = 50
+  best_move, score = find_best_move(copy_board(board), True, amount_iterations)
+
+  print("Resulting score:", str(score))
 
   return best_move
 
