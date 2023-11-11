@@ -218,6 +218,7 @@ def get_move(player, board):
     
     # If end conditions not met, recurse
     optimal_move = valid_moves[0][1]
+    current_score = None
 
     if (max_player):
       current_score = float('-inf')
