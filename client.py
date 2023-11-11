@@ -14,12 +14,20 @@ import socket
 #          [0, 0, 0, 0, 0, 0, 0, 0]]
 
 def get_move(player, board):
-  # Variables for movement directions
+  # Movement directions
   # Can be combined for diagonals
   MOVE_UP = 1
   MOVE_DOWN = -1
   MOVE_RIGHT = 1
   MOVE_LEFT = -1
+
+  # Array navigators
+  # Just to make it easier to read certain code
+  GET_ROW = 0
+  GET_COL = 1
+
+  # Stone variables
+  NO_STONE = 0
 
   # Diagonals:
   # Bottom left:  [MOVE_DOWN, MOVE_LEFT]
@@ -30,9 +38,45 @@ def get_move(player, board):
   board_rows = len(board)
   board_cols = len(board[0])
 
-  # Search in a linear direction from the input position
-  def search_linear(position ,dir_row, dir_col):
-    pass
+  # Return the piece from the specified row and column
+  # Used to make later code look better
+  def get_stone(pos_row, pos_col):
+    return board[pos_row][pos_col]
+
+  # Make sure that location is within board boundaries
+  def within_boundaries(pos_row, pos_col):
+    return pos_row < board_rows and pos_col < board_cols
+
+  # Search in specified direction for stones that can be flipped
+  # Depending on arguments, can search linearly or diagonally
+  def search_direction(position, dir_row, dir_col):
+    # Start at current position
+    pos_row = position[GET_ROW]
+    pos_col = position[GET_COL]
+
+    flipped_stones = 0
+    valid = False
+
+    while within_boundaries(pos_row, pos_col):
+      stone = get_stone(pos_row, pos_col)
+
+      if stone == NO_STONE:
+        break
+      # End loop and mark direction as valid if player's stone is found at the end
+      elif stone == player:
+        valid = True
+        break
+      else:
+        flipped_stones += 1
+
+      # Move in specified direction
+      pos_row += dir_row
+      pos_col += dir_col
+
+    if valid:
+      return flipped_stones
+    else:
+      return 0
 
   valid_moves = []
 
@@ -45,7 +89,9 @@ def get_move(player, board):
       if stone_value != 0:
         continue
 
-      # Search up and down from current position
+      flipped_stones = 0
+      # Search all directions for opposing player's stones that can be flipped
+      
 
 
   # TODO determine best move
