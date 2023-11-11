@@ -4,16 +4,8 @@ import sys
 import json
 import socket
 
-# board = [[0, 0, 0, 0, 0, 0, 0, 0],
-#          [0, 0, 0, 0, 0, 0, 0, 0],
-#          [0, 0, 0, 0, 0, 0, 0, 0],
-#          [0, 0, 0, 1, 2, 0, 0, 0],
-#          [0, 0, 0, 2, 1, 0, 0, 0],
-#          [0, 0, 0, 0, 0, 0, 0, 0],
-#          [0, 0, 0, 0, 0, 0, 0, 0],
-#          [0, 0, 0, 0, 0, 0, 0, 0]]
-
 def get_move(player, board):
+  # --- "STATIC" VARIABLES
   # Movement directions
   # Can be combined for diagonals
   SEARCH_UP = 1
@@ -34,6 +26,7 @@ def get_move(player, board):
   board_rows = len(board)
   board_cols = len(board[0])
 
+  # --- HELPER FUNCTIONS
   # Return the piece from the specified row and column
   # Used to make later code look better
   def get_stone(pos_row, pos_col):
@@ -80,6 +73,7 @@ def get_move(player, board):
     else:
       return 0
 
+  # --- DETERMINE VALID MOVES
   valid_moves = []
 
   # Determine valid moves
@@ -112,10 +106,11 @@ def get_move(player, board):
       if flipped_stones > 0:
         valid_moves.append([flipped_stones, current_pos])
 
-  # Determine best move
+  # --- DETERMINE BEST MOVES
   def get_amount_flipped(valid_move):
     return valid_move[0]
 
+  # Determine move with the most flipped stones
   best_move = max(valid_moves, key=get_amount_flipped)[1]
 
   return best_move
