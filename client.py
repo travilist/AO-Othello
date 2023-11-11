@@ -16,10 +16,11 @@ import socket
 def get_move(player, board):
   # Movement directions
   # Can be combined for diagonals
-  MOVE_UP = 1
-  MOVE_DOWN = -1
-  MOVE_RIGHT = 1
-  MOVE_LEFT = -1
+  SEARCH_UP = 1
+  SEARCH_DOWN = -1
+  SEARCH_RIGHT = 1
+  SEARCH_LEFT = -1
+  SEARCH_NONE = 0
 
   # Array navigators
   # Just to make it easier to read certain code
@@ -29,12 +30,7 @@ def get_move(player, board):
   # Stone variables
   NO_STONE = 0
 
-  # Diagonals:
-  # Bottom left:  [MOVE_DOWN, MOVE_LEFT]
-  # Top left:     [MOVE_UP, MOVE_LEFT]
-  # Bottom right: [MOVE_DOWN, MOVE_RIGHT]
-  # Top right:    [MOVE_UP, MOVE RIGHT]
-
+  # Board size
   board_rows = len(board)
   board_cols = len(board[0])
 
@@ -49,10 +45,14 @@ def get_move(player, board):
 
   # Search in specified direction for stones that can be flipped
   # Depending on arguments, can search linearly or diagonally
-  def search_direction(position, dir_row, dir_col):
+  def search_direction(position, dir):
     # Start at current position
     pos_row = position[GET_ROW]
     pos_col = position[GET_COL]
+
+    # Extract search direction from dir array
+    dir_row = dir[GET_ROW]
+    dir_col = dir[GET_COL]
 
     flipped_stones = 0
     valid = False
@@ -89,13 +89,29 @@ def get_move(player, board):
       if stone_value != 0:
         continue
 
-      flipped_stones = 0
-      # Search all directions for opposing player's stones that can be flipped
-      
+      flipped_stones = 0  # Amount of flipped stones found during searching
+      current_pos = [row, col]  # Current loop position, for searching input
 
+      search_directions = [
+        [SEARCH_UP, SEARCH_NONE], # UP
+        [SEARCH_DOWN, SEARCH_NONE], # DOWN
+        [SEARCH_NONE, SEARCH_RIGHT], # RIGHT
+        [SEARCH_NONE, SEARCH_LEFT], # LEFT
+        [SEARCH_DOWN, SEARCH_RIGHT], # BOTTOM RIGHT DIAGONAL
+        [SEARCH_UP, SEARCH_RIGHT], # TOP RIGHT DIAGONAL
+        [SEARCH_DOWN, SEARCH_LEFT], # BOTTOM LEFT DIAGONAL
+        [SEARCH_UP, SEARCH_LEFT] # TOP LEFT DIAGONAL
+      ]
+
+      # Search all directions for opposing player's stones that can be flipped
+      for direction in search_directions:
+        flipped_stones += search_direction(current_pos, direction)
+
+      if flipped_stones > 0:
+        valid_moves.append([flipped_stones, current_pos])
 
   # TODO determine best move
-  return [2, 3]
+  return valid_moves[0]
 
 def prepare_response(move):
   response = '{}\n'.format(move).encode()
