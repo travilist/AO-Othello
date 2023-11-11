@@ -177,7 +177,7 @@ def get_move(player, board):
 
     if player_one_stones > player_two_stones:
       majority_stones = 1
-    elif player_two_stones < player_one_stones:
+    elif player_two_stones > player_one_stones:
       majority_stones = 2
     
     if board_full:
@@ -245,7 +245,7 @@ def get_move(player, board):
     return optimal_move, current_score
     
   # Determine move with the most flipped stones
-  amount_iterations = 50
+  amount_iterations = 15
   best_move, score = find_best_move(copy_board(board), True, amount_iterations)
 
   print("Resulting score:", str(score))
