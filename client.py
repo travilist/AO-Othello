@@ -149,10 +149,6 @@ def get_move(player, board):
 
     return board_full, player_one_stones, player_two_stones
 
-  # Variables to better help navigate valid_moves array
-  LIST_FLIPPED = 0
-  LIST_POS = 1
-
   scores = {
     'Opp has no stones': 5000,
     'Plr wins': 1000,
