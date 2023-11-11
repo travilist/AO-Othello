@@ -41,18 +41,20 @@ def get_move(player, board):
 
   # Make sure that location is within board boundaries
   def within_boundaries(pos_row, pos_col):
-    return pos_row < board_rows and pos_col < board_cols
+    within_max_boundary = pos_row < board_rows and pos_col < board_cols
+    within_min_boundary = pos_row >= 0 and pos_col >= 0
+    return within_max_boundary and within_min_boundary
 
   # Search in specified direction for stones that can be flipped
   # Depending on arguments, can search linearly or diagonally
   def search_direction(position, dir):
-    # Start at current position
-    pos_row = position[GET_ROW]
-    pos_col = position[GET_COL]
-
     # Extract search direction from dir array
     dir_row = dir[GET_ROW]
     dir_col = dir[GET_COL]
+
+    # Start at first position from current
+    pos_row = position[GET_ROW] + dir_row
+    pos_col = position[GET_COL] + dir_col
 
     flipped_stones = 0
     valid = False
@@ -110,8 +112,13 @@ def get_move(player, board):
       if flipped_stones > 0:
         valid_moves.append([flipped_stones, current_pos])
 
-  # TODO determine best move
-  return valid_moves[0]
+  # Determine best move
+  def get_amount_flipped(valid_move):
+    return valid_move[0]
+
+  best_move = max(valid_moves, key=get_amount_flipped)[1]
+
+  return best_move
 
 def prepare_response(move):
   response = '{}\n'.format(move).encode()
